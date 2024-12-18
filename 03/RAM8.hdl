@@ -1,0 +1,47 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/3/a/RAM8.hdl
+/**
+ * Memory of eight 16-bit registers.
+ * If load is asserted, the value of the register selected by
+ * address is set to in; Otherwise, the value does not change.
+ * The value of the selected register is emitted by out.
+ */
+CHIP RAM8 {
+    IN in[16], load, address[3];
+    OUT out[16];
+
+    PARTS:
+    Register(in=in, load=load0, out=out0);
+    Register(in=in, load=load1, out=out1);
+    Register(in=in, load=load2, out=out2);
+    Register(in=in, load=load3, out=out3);
+    Register(in=in, load=load4, out=out4);
+    Register(in=in, load=load5, out=out5);
+    Register(in=in, load=load6, out=out6);
+    Register(in=in, load=load7, out=out7);
+
+    Mux16(a=out0, b=out1,sel=address[0],out=mux0);
+    Mux16(a=out2, b=out3,sel=address[0],out=mux1);
+    Mux16(a=out4, b=out5,sel=address[0],out=mux2);
+    Mux16(a=out6, b=out7,sel=address[0],out=mux3);
+
+    Mux16(a=mux0,b=mux1,sel=address[1],out=mux0a);
+    Mux16(a=mux2,b=mux3,sel=address[1],out=mux1a);
+
+    Mux16(a=mux0a, b=mux1a,sel=address[2],out=out);
+
+    DMux(in=load,sel=address[2],a=dmux0, b=dmux1);
+
+    DMux(in=dmux0,sel=address[1], a=dmux0a, b=dmux1a);
+    DMux(in=dmux1,sel=address[1], a=dmux0b, b=dmux1b);
+
+    DMux(in=dmux0a,sel=address[0], a=load0, b=load1);
+    DMux(in=dmux1a,sel=address[0], a=load2, b=load3);
+    DMux(in=dmux0b,sel=address[0], a=load4, b=load5);
+    DMux(in=dmux1b,sel=address[0], a=load6, b=load7);
+    
+
+    
+}
