@@ -1,0 +1,20 @@
+@i
+M=0
+
+(LOOP)
+	@R0
+	D=M
+	@R3
+	M=D+M
+	@i
+	M=M+1
+	D=M
+	@R1
+	D=M-D
+	@END
+	D;JEQ
+	@LOOP
+	0;JMP
+(END)
+	@END
+	0;JMP
