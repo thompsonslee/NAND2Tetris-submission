@@ -1,0 +1,135 @@
+class GameController{
+    field Board board;
+    constructor GameController new(){
+        let board = Board.new();
+        return this;
+    }
+    method void start(){
+        do Render.initBlocks();
+        do Render.renderBorder();
+        do board.spawnShape(5,0);
+        do renderShape(0);
+        do run();
+        return;
+    }
+    method void test(){
+        var Shape shape;
+        var Array b0;
+        var Array b1;
+        var Array b2;
+        var Array b3;
+
+        do Render.initBlocks();
+        do Render.renderBorder();
+        do board.placeShape(5,0);
+        let shape = board.getShape();
+        let b0 = shape.getBlock(0);
+        let b1 = shape.getBlock(1);
+        let b2 = shape.getBlock(2);
+        let b3 = shape.getBlock(3);
+        do Render.renderBlock(b0[0],b0[1],2);
+        do Render.renderBlock(b1[0],b1[1],2);
+        do Render.renderBlock(b2[0],b2[1],2);
+        do Render.renderBlock(b3[0],b3[1],2);
+        return;
+    }
+
+
+    //if 1 then set shape to blank, if 0, then use whatever the shapes texture is
+    method void renderShape(int clear){
+        var Shape shape;
+        var Array b0;
+        var Array b1;
+        var Array b2;
+        var Array b3;
+        var int blockTexture;
+
+        if(clear = 1){
+            let blockTexture = 0;
+        }
+        else{
+            let blockTexture = board.getShapeTexture();
+        }
+        let shape = board.getShape();
+        let b0 = shape.getBlock(0);
+        let b1 = shape.getBlock(1);
+        let b2 = shape.getBlock(2);
+        let b3 = shape.getBlock(3);
+        do Render.renderBlock(b0[0],b0[1],blockTexture);
+        do Render.renderBlock(b1[0],b1[1],blockTexture);
+        do Render.renderBlock(b2[0],b2[1],blockTexture);
+        do Render.renderBlock(b3[0],b3[1],blockTexture);
+        return;
+    }
+
+    method void next(){
+        do renderShape(1);
+        do board.moveShapeDown();
+        do renderShape(0);
+        return;
+    }
+    //d = 100 a = 97 s=115 w=119
+    method void run(){ //rework this to be an infinite loop maybe to avoid infinite recursive call
+        do awaitUserInput();
+        do next();
+        do run();
+        return;
+    }
+    method void awaitUserInput(){
+        var int i;
+        var char keyDown;
+        var char setKeyDown;
+        let setKeyDown = 0;
+        let keyDown = 0;
+        let i = 0;
+        while(i < 30000){
+            let keyDown = Memory.peek(24576);
+            if(keyDown > 0){
+                if(keyDown = setKeyDown){}
+                else{
+                    let setKeyDown = keyDown;
+                    do processUserInput(keyDown);
+                }
+            }
+            else{
+                let setKeyDown = 0;
+            }
+            let i = i + 1;
+        }
+        return;
+    }
+    method void processUserInput(int key){
+        if(key = 97){ //a 
+           do moveShapeLeft();
+           return;
+        }
+        if(key = 100){ //d
+           do moveShapeRight();
+           return;
+        }
+        return;
+    }
+    method void moveShapeLeft(){
+        do renderShape(1);
+        do board.moveShapeLeft();
+        do renderShape(0);
+        return;
+    }
+    method void moveShapeRight(){
+        do renderShape(1);
+        do board.moveShapeRight();
+        do renderShape(0);
+        return;
+    }
+    method void readUserInput(){
+        var char keyPressed;
+        let keyPressed = Keyboard.keyPressed();
+        if(keyPressed = 0){
+            return;
+        }
+        if(keyPressed = "a"){
+            do moveShapeLeft();
+        }
+        return;
+    }
+}

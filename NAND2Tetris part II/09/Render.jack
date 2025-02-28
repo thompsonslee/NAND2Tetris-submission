@@ -1,0 +1,191 @@
+//left border address: 16394
+//right border address: 16405
+//xLocation: between 0 and 9
+//yLocation: between 0 and 15 
+
+class Render{
+    static Array block0;
+    static Array block1;
+    static Array block2;
+    static Array block3;
+    static Array block4;
+    static Array block5;
+    static Array block6;
+
+    function void initBlocks(){
+        let block0 = Array.new(16);
+        let block1 = Array.new(16);
+        let block1[0] = -1;
+        let block1[1] = -1; 
+        let block1[2] = 6144;
+        let block1[3] = 6144;
+        let block1[4] = -1;
+        let block1[5] = -1;
+        let block1[6] = 96;
+        let block1[7] = 96;
+        let block1[8] = -1;
+        let block1[9] = -1;
+        let block1[10] = 24576;
+        let block1[11] = 24576;
+        let block1[12] = -1;
+        let block1[13] = -1;
+        let block1[14] = 12;
+        let block1[15] = 12;
+        
+        let block2 = Array.new(16);
+        let block2[0] = -1;
+        let block2[1] = -1; 
+        let block2[2] = -16381;
+        let block2[3] = -16381;
+        let block2[4] = -16381;
+        let block2[5] = -16381;
+        let block2[6] = -15421;
+        let block2[7] = -15421;
+        let block2[8] = -15421;
+        let block2[9] = -15421;
+        let block2[10] = -16381;
+        let block2[11] = -16381;
+        let block2[12] = -16381;
+        let block2[13] = -16381;
+        let block2[14] = -1;
+        let block2[15] = -1;
+
+        let block3 = Array.new(16);
+        let block3[0] = -1;
+        let block3[1] = -1; 
+        let block3[2] = -16381;
+        let block3[3] = -16381;
+        let block3[4] = -13261;
+        let block3[5] = -13261;
+        let block3[6] = -12301;
+        let block3[7] = -12301;
+        let block3[8] = -12301;
+        let block3[9] = -12301;
+        let block3[10] = -13261;
+        let block3[11] = -13261;
+        let block3[12] = -16381;
+        let block3[13] = -16381;
+        let block3[14] = -1;
+        let block3[15] = -1;
+
+        let block4 = Array.new(16);
+        let block4[0] = -1;
+        let block4[1] = -1; 
+        let block4[2] = -16381;
+        let block4[3] = -16381;
+        let block4[4] = -14365;
+        let block4[5] = -12301;
+        let block4[6] = -13261;
+        let block4[7] = -13261;
+        let block4[8] = -13261;
+        let block4[9] = -13261;
+        let block4[10] = -12301;
+        let block4[11] = -14365;
+        let block4[12] = -16381;
+        let block4[13] = -16381;
+        let block4[14] = -1;
+        let block4[15] = -1;
+
+        let block5 = Array.new(16);
+        let block5[0] = -1;
+        let block5[1] = -1; 
+        let block5[2] = -14749;
+        let block5[3] = -14749;
+        let block5[4] = -14749;
+        let block5[5] = -1;
+        let block5[6] = -1;
+        let block5[7] = -14749;
+        let block5[8] = -14749;
+        let block5[9] = -1;
+        let block5[10] = -1;
+        let block5[11] = -14749;
+        let block5[12] = -14749;
+        let block5[13] = -14749;
+        let block5[14] = -1;
+        let block5[15] = -1;
+
+        let block6 = Array.new(16);
+        let block6[0] = -1;
+        let block6[1] = -1; 
+        let block6[2] = -4081;
+        let block6[3] = -2017;
+        let block6[4] = -9157;
+        let block6[5] = -12685;
+        let block6[6] = -14365;
+        let block6[7] = -15485;
+        let block6[8] = -15421;
+        let block6[9] = -14365;
+        let block6[10] = -12685;
+        let block6[11] = -9157;
+        let block6[12] = -2017;
+        let block6[13] = -4081;
+        let block6[14] = -1;
+        let block6[15] = -1;
+        return;
+    }
+    function void renderBlock(int xLocation, int yLocation, int type){
+        var int blockLocation;
+        var int blockPixelRows;
+        var Array block;
+        if(type = 0){
+            let block = block0;
+        }
+        if(type = 1){
+            let block = block1;
+        }
+        if(type = 2){
+            let block = block2;
+        }
+        if(type = 3){
+            let block = block3;
+        }
+        if(type = 4){
+            let block = block4;
+        }
+        if(type = 5){
+            let block = block5;
+        }
+        if(type = 6){
+            let block = block6;
+        }  
+        let blockPixelRows = 0;
+        let blockLocation = 16395 + xLocation + ((yLocation * 32) * 16);
+        while(blockPixelRows < 16){
+            do Memory.poke(blockLocation + (blockPixelRows * 32),block[blockPixelRows]);
+            let blockPixelRows = blockPixelRows + 1;
+        }
+        return;
+    }
+    function void renderBorder(){
+        var int leftBorderLocation;
+        var int row;      
+        var int i;
+        var int currentRowAddr;
+        var int currentColIndex;
+        var int currentBlockAddr;
+        var int currentBlockRowIndex;
+        let leftBorderLocation = 16394;
+        let row = 0;
+        while(row < 16){
+            let currentRowAddr = 16384 + ((row * 32) * 16);
+            let currentColIndex = 0;
+            while(currentColIndex < 11){
+                let currentBlockAddr = currentRowAddr + currentColIndex;
+                let currentBlockRowIndex = 0;
+                while(currentBlockRowIndex < 16){
+                    do Memory.poke(currentBlockAddr + (currentBlockRowIndex * 32), block1[currentBlockRowIndex]);
+                    do Memory.poke(currentBlockAddr + (currentBlockRowIndex * 32) + 21, block1[currentBlockRowIndex]); 
+                    let currentBlockRowIndex = currentBlockRowIndex + 1;
+                }
+                let currentColIndex = currentColIndex + 1;
+            }
+            let row = row + 1;
+        }
+        return;
+    }
+    function void clearBoard(){
+        do Screen.setColor(0);
+        do Screen.drawRectangle(176,0,336,255);
+        return;
+    }
+}

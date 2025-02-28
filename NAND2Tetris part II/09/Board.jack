@@ -1,0 +1,68 @@
+class Board{
+    field Array rows;
+    field Shape shape;
+    constructor Board new(){
+        let rows = Array.new(16);
+        return this;
+    }
+    //x between 0-9 y between 0-15
+    method boolean isSpaceOccupied (int x, int y) {
+        var int bitfield;
+        var int i;
+        var int isOccupied;
+        var Array rows;
+        let i = 9 - x; //i has to be the reverse of what x is, because bits work from right to left (example: x = 8 , then i = 1)
+        let bitfield = 1;
+        while(i < 0){
+            let bitfield = bitfield * 2;
+            let i = i + 1;
+        }
+        let rows = getRows();
+        let isOccupied = rows[y] & bitfield;
+        if(isOccupied = 0){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+    method void spawnShape(int x,int type){
+        var Shape newShape;
+        var int i;
+        let newShape = Shape.new(type);
+        
+        let i = 0;
+        while(i < x){
+            do newShape.moveRight();
+            let i = i + 1;
+        }
+        let shape = newShape;
+        return;
+    }
+    method Shape getShape(){
+        return shape;
+    }
+    method Array getRows(){
+        return rows;
+    }
+    method void moveShapeDown(){
+        do shape.moveDown();
+        return;
+    }
+    method void moveShapeLeft(){
+        do shape.moveLeft();
+        return;
+    }
+    method void moveShapeRight(){
+        do shape.moveRight();
+        return;
+    }
+    method int getShapeTexture(){
+        return shape.getTexture();
+    }
+    //0 = left, 1 = right, 2 = down
+    method boolean canMove(int direction){
+
+    }
+    
+}

@@ -1,0 +1,8 @@
+class Main{
+    function void main(){
+       var GameController game;
+       let game = GameController.new();
+       do game.start();
+       return;
+    }
+}
