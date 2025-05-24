@@ -8,15 +8,32 @@ class Shape{
     constructor Shape new(int type){
         let block0 = Array.new(2);
         let block1 = Array.new(2);
-        let block2 = Array.new(2);
+        let block2 = Array.new(2); // always middle block
         let block3 = Array.new(2);
-        do getShapeData(type);
+        do setShapeData(type);
         return this;
     }
-    method void getShapeData(int type){
+    method void setShapeData(int type){
         if(type = 0){
             do setStraight();
+			return;
         }
+        if(type = 1){
+            do setSquare();
+			return;
+        }
+		if(type = 2){
+			do setL();
+			return;
+		}
+		if(type = 3){
+			do setZigZag();
+			return;
+		}
+		if(type = 4){
+			do setT();
+			return;
+		}
         return;
     }
     method void setStraight(){
@@ -27,6 +44,38 @@ class Shape{
         let block3[0] = 0; let block3[1] = 3;
         return;
     }
+    method void setSquare(){
+        let texture = 3;
+        let block0[0] = 0; let block0[1] = 0;
+        let block1[0] = 0; let block1[1] = 1;
+        let block2[0] = 1; let block2[1] = 0;
+        let block3[0] = 1; let block3[1] = 1;
+        return;
+    }
+	method void setL(){
+		let texture = 4;
+		let block0[0] = 0; let block0[1] = 0;
+		let block1[0] = 0; let block1[1] = 1;
+		let block2[0] = 0; let block2[1] = 2;
+		let block3[0] = 1; let block3[1] = 2;
+		return;
+	}
+	method void setZigZag(){
+		let texture = 5;
+		let block0[0] = 0; let block0[1] = 0;
+		let block1[0] = 0; let block1[1] = 1;
+		let block2[0] = 1; let block2[1] = 1;
+		let block3[0] = 1; let block3[1] = 2;
+		return;
+	}
+	method void setT(){
+		let texture = 6;
+		let block0[0] = 0; let block0[1] = 0;
+		let block1[0] = 2; let block1[1] = 0;
+		let block2[0] = 1; let block2[1] = 0;
+		let block3[0] = 1; let block3[1] = 1;
+		return;
+	}
     method void moveRight(){
         let block0[0] = block0[0] + 1;
         let block1[0] = block1[0] + 1;
@@ -69,4 +118,54 @@ class Shape{
     method int getTexture(){
         return texture;
     }
+
+    method void rotate(){
+        let block0 = rotateBlock(block0);
+        let block1 = rotateBlock(block1);
+        let block3 = rotateBlock(block3);
+        return;
+    }
+
+    //returns a new block with the new position if it was rotated
+    method Array rotateBlock(Array block){
+        var int x;
+        var int y;
+        var int mX;
+        var int mY;
+        var int xDeviance;
+        var int yDeviance;
+        var int newYdeviance;
+        var int newXdeviance;
+        var int addToX;
+        var int addToY;
+        var Array newBlock;
+
+        let x = block[0];
+        let y = block[1];
+
+        let mX = block2[0];
+        let mY = block2[1];
+
+        let xDeviance = x - mX;
+        let yDeviance = y - mY;
+
+        let newYdeviance = xDeviance;
+        let newXdeviance = 0 - yDeviance;
+
+        let addToX = 0 - (xDeviance - newXdeviance);
+        let addToY = 0 - (yDeviance - newYdeviance);
+
+        let newBlock = Array.new(2);
+        let newBlock[0] = x + addToX;
+        let newBlock[1] = y + addToY;
+        return newBlock;
+   }
+
+	method boolean isAtTop(){
+		if(block0[1] = 1){return true;}
+		if(block1[1] = 1){return true;}
+		if(block2[1] = 1){return true;}
+		if(block3[1] = 1){return true;}
+		return false;
+	}
 }

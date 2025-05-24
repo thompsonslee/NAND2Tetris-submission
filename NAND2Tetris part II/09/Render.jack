@@ -188,4 +188,41 @@ class Render{
         do Screen.drawRectangle(176,0,336,255);
         return;
     }
+    function void clearRow(int rowYaxis){
+        var int i;
+
+        let i = 0;
+        while(i < 10){
+            do Render.renderBlock(i,rowYaxis,0);
+            let i = i + 1;
+        }
+        return;
+    }
+    //shifts the current row down by 1.  
+    //first row address: 16395
+    //last row address: 16404
+    function void moveBlockDown(int xLocation, int yLocation){ 
+        var int blockLocation;
+        var int newLocation;
+        var int rowPixels;
+ 
+        var int i;
+
+
+        //top left location of the block
+        let blockLocation = 16395 + xLocation + ((yLocation * 32) * 16);
+
+        //top left location of the place the block should be
+        let newLocation = blockLocation + (32 * 16);//move down 16 pixel rows
+
+        let i = 0;
+        while(i < 16){
+           let rowPixels = Memory.peek(blockLocation + (32 * i));
+           do Memory.poke(blockLocation + (32 * i), 0); 
+           do Memory.poke(newLocation + (32 * i),rowPixels);
+
+           let i = i + 1;
+        }
+        return;
+   }
 }

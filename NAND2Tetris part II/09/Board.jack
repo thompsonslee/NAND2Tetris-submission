@@ -5,17 +5,24 @@ class Board{
         let rows = Array.new(16);
         return this;
     }
+    //a full row is equal to decimal 1023 in binary
     //x between 0-9 y between 0-15
-    method boolean isSpaceOccupied (int x, int y) {
+    method boolean isSpaceOccupied(int x, int y) {
         var int bitfield;
         var int i;
         var int isOccupied;
         var Array rows;
+
+        if(x > 9) { return true;}
+        if(x < 0) { return true;}
+        if(y > 15){ return true;}
+        if(y < 0) { return true;}
+
         let i = 9 - x; //i has to be the reverse of what x is, because bits work from right to left (example: x = 8 , then i = 1)
         let bitfield = 1;
-        while(i < 0){
+        while(i > 0){
             let bitfield = bitfield * 2;
-            let i = i + 1;
+            let i = i - 1;
         }
         let rows = getRows();
         let isOccupied = rows[y] & bitfield;
@@ -25,6 +32,18 @@ class Board{
         else{
             return true;
         }
+    }
+    method void placeBlock(int x, int y){
+        var int bitfield;
+        var int i;
+        let bitfield = 1;
+        let i = 9 - x;
+        while(i > 0){
+            let bitfield = bitfield * 2;
+            let i = i - 1;
+        }
+        let rows[y] = rows[y] + bitfield;
+        return;
     }
     method void spawnShape(int x,int type){
         var Shape newShape;
@@ -60,9 +79,156 @@ class Board{
     method int getShapeTexture(){
         return shape.getTexture();
     }
-    //0 = left, 1 = right, 2 = down
-    method boolean canMove(int direction){
-
+    //0 = left, 1 = right, 2 = down, 3 = rotate
+    method boolean canMove(int moveType){
+        var int i;
+        var Array block;
+        var int xAxis;
+        var int yAxis;
+        let i = 0;
+        while(i < 4){
+            let block = shape.getBlock(i);
+            let xAxis = block[0];
+            let yAxis = block[1];
+            if(moveType = 0){
+                if(xAxis = 0){
+                    return false;
+                }
+                if(isSpaceOccupied(xAxis - 1, yAxis)){
+                    return false;
+                }
+            }
+            if(moveType = 1){
+                if(xAxis = 9){
+                    return false;
+                }
+                if(isSpaceOccupied(xAxis + 1, yAxis)){
+                    return false;
+                }
+            }
+            if(moveType = 2){
+                if(yAxis = 15){
+                    return false;
+                }
+                if(isSpaceOccupied(xAxis, yAxis + 1)){
+                    return false;
+                }
+            }
+            if(moveType = 3){
+                let block = shape.rotateBlock(block);
+                let xAxis = block[0];
+                let yAxis = block[1];
+                if(isSpaceOccupied(xAxis, yAxis)){
+                    return false;
+                }
+            }
+            let i = i + 1;
+        }
+        return true;
     }
-    
+    //places blocks where current shape is
+    method void placeShape(){
+        var int i;
+        var Array block;
+        let i = 0;
+        while(i < 4){
+            let block = shape.getBlock(i);
+            do placeBlock(block[0],block[1]);
+            let i = i + 1;
+        }
+        return;
+    }
+    // ready for gameController to use
+    method void rotateShape(){
+        do shape.rotate();
+        return;
+    }
+    method int getFullRowCount(){
+        var int fullRowCount;
+        var int i;
+        let fullRowCount = 0;
+        let i = 0;
+        while(i < 16){
+            if(rows[i] = -1){
+                let fullRowCount = fullRowCount + 1;
+            }
+            let i = i + 1;
+        }
+        return fullRowCount;
+    }
+    //returns an array containing the y axis of every full row
+    method Array getFullRowsYaxis(){
+        var int fullRowCount;
+        var Array fullRowYaxis;
+        var int arrayLength;
+        var int i;
+        let fullRowCount = getFullRowCount();
+        let fullRowCount = Array.new(fullRowCount);
+        let i = 0;
+        let arrayLength = 0;
+        while(i < 16){
+            if(rows[i] = -1){
+                let fullRowYaxis[arrayLength] = i;
+                let arrayLength = arrayLength + 1;
+            }
+            let i = i + 1;
+        }
+        return fullRowYaxis;
+    }
+    method void removeAnyFullRows(){
+        //todo:
+        //from top to bottom, check if row is full.
+        //if full, clear it, and shift all rows above it down by 1.
+        //create a shiftrowdown function
+
+        var int i;
+        
+        let i = 16;
+
+        while(i > 0){
+            let i = i - 1;
+            
+
+            //1023 in binary is a full row
+            if(rows[i] = 1023){
+                do Output.printString("hello");
+                do Output.printInt(rows[i]);
+                let rows[i] = 0;
+                do shiftRowsDown(i); 
+            }
+        }
+        return;
+        
+    }
+
+    //shifts all rows above rowYaxis down by 1
+    method void shiftRowsDown(int rowYaxis){
+        var int i;
+
+        do Output.printInt(rowYaxis);
+
+        let i = rowYaxis;
+
+        while(i < 16){
+            let rows[i] = rows[i + 1];
+            let rows[i + 1] = 0;
+
+            let i = i + 1;
+        }
+        return;
+    }
+    method boolean isRowFull(int rowYaxis){
+        if(rows[rowYaxis] = 1023){
+            return true;
+        } 
+        return false;
+    }
+    method void clearRow(int rowYaxis){
+        let rows[rowYaxis] = 0;
+        return;
+    }
+
+	method boolean isShapeAtTop(){
+		return shape.isAtTop();
+	}
 }

@@ -1,40 +1,52 @@
 class GameController{
     field Board board;
+	field Array randomShapeArray;
+	field int randomShapeArrayIndex;
+	field boolean isGameOver;
+
     constructor GameController new(){
         let board = Board.new();
+		let randomShapeArray = returnRandomNumbers();
+		let isGameOver = false;
         return this;
     }
+	
+	method Array returnRandomNumbers(){
+		var Array numbers;
+		let numbers = Array.new(10);
+		let numbers[0] = 4;
+		let numbers[1] = 1;
+		let numbers[2] = 2;
+		let numbers[3] = 3;
+		let numbers[4] = 0;
+		let numbers[5] = 4;
+		let numbers[6] = 1;
+		let numbers[7] = 3;
+		let numbers[8] = 2;
+		let numbers[9] = 0;
+
+		return numbers;
+	}
+
+	method int getNextRandom(){
+		var int num;
+
+		let num = randomShapeArray[randomShapeArrayIndex];
+		if(randomShapeArrayIndex = 9){
+			let randomShapeArrayIndex = 0;
+			return num;
+		}
+		let randomShapeArrayIndex = randomShapeArrayIndex + 1;
+		return num;
+	}
     method void start(){
         do Render.initBlocks();
         do Render.renderBorder();
-        do board.spawnShape(5,0);
+        do board.spawnShape(5,1);
         do renderShape(0);
         do run();
         return;
     }
-    method void test(){
-        var Shape shape;
-        var Array b0;
-        var Array b1;
-        var Array b2;
-        var Array b3;
-
-        do Render.initBlocks();
-        do Render.renderBorder();
-        do board.placeShape(5,0);
-        let shape = board.getShape();
-        let b0 = shape.getBlock(0);
-        let b1 = shape.getBlock(1);
-        let b2 = shape.getBlock(2);
-        let b3 = shape.getBlock(3);
-        do Render.renderBlock(b0[0],b0[1],2);
-        do Render.renderBlock(b1[0],b1[1],2);
-        do Render.renderBlock(b2[0],b2[1],2);
-        do Render.renderBlock(b3[0],b3[1],2);
-        return;
-    }
-
-
     //if 1 then set shape to blank, if 0, then use whatever the shapes texture is
     method void renderShape(int clear){
         var Shape shape;
@@ -63,6 +75,19 @@ class GameController{
     }
 
     method void next(){
+		var int newShapeType;
+        if(board.canMove(2) = false){
+			if(board.isShapeAtTop()){
+				let isGameOver = true;
+				return;
+			}
+            do board.placeShape();
+            do removeAnyFullRows();
+			let newShapeType = getNextRandom();
+            do board.spawnShape(5,newShapeType);
+            do renderShape(0);
+        }
+
         do renderShape(1);
         do board.moveShapeDown();
         do renderShape(0);
@@ -72,9 +97,19 @@ class GameController{
     method void run(){ //rework this to be an infinite loop maybe to avoid infinite recursive call
         do awaitUserInput();
         do next();
+		if(isGameOver){
+			do finishGame();
+			return;
+		}
         do run();
         return;
     }
+
+	method void finishGame(){
+		do Output.printString("Game Over");
+		return;
+	}
+
     method void awaitUserInput(){
         var int i;
         var char keyDown;
@@ -89,6 +124,10 @@ class GameController{
                 else{
                     let setKeyDown = keyDown;
                     do processUserInput(keyDown);
+                    //if key = d, leave loop
+                    if(keyDown = 115){
+                        return;
+                    }
                 }
             }
             else{
@@ -107,20 +146,44 @@ class GameController{
            do moveShapeRight();
            return;
         }
+        if(key = 119){ //w
+            do rotateShape();
+            return;
+        }
+        if(key = 115){ //s
+            do pushShapeDown();
+            return;
+        }
         return;
     }
     method void moveShapeLeft(){
+        if(board.canMove(0) = false){
+            return;
+        }
         do renderShape(1);
         do board.moveShapeLeft();
         do renderShape(0);
         return;
     }
     method void moveShapeRight(){
+        if(board.canMove(1) = false){
+            return;
+        }
         do renderShape(1);
         do board.moveShapeRight();
         do renderShape(0);
         return;
     }
+    method void rotateShape(){
+        if(board.canMove(3) = false){
+            return;
+        }
+        do renderShape(1);
+        do board.rotateShape();
+        do renderShape(0);
+        return;
+    }
+    /*
     method void readUserInput(){
         var char keyPressed;
         let keyPressed = Keyboard.keyPressed();
@@ -129,6 +192,63 @@ class GameController{
         }
         if(keyPressed = "a"){
             do moveShapeLeft();
+        }
+        return;
+    }
+    */
+    method void pushShapeDown(){
+        var int keyDown;
+        var int i;
+        let keyDown = Memory.peek(24576);
+        while(keyDown = 115){
+            if(board.canMove(2) = false){
+                return;
+            }
+            let i = 0;
+            while(i < 5000){
+                let i = i + 1;
+            }
+            do renderShape(1);
+            do board.moveShapeDown();
+            do renderShape(0);
+            let keyDown = Memory.peek(24576);
+        }
+        return;
+    }
+    method void removeAnyFullRows(){
+        var int i; 
+        
+        let i = 0;
+
+        while(i < 16){
+            if(board.isRowFull(i) = true){
+               do shiftRowsDown(i);
+            }
+
+            let i = i + 1;
+        }
+        return;
+    }
+    method void shiftRowsDown(int rowYaxis){
+        var int currRow;
+        var int j;
+        let currRow = rowYaxis;
+
+        do Render.clearRow(rowYaxis);
+        do board.clearRow(rowYaxis);
+
+        while(currRow > 0){
+            let j = 0;
+            while(j < 10){
+                if(board.isSpaceOccupied(j,currRow - 1)){
+                    do board.placeBlock(j,currRow);
+                    do Render.moveBlockDown(j,currRow -1);
+                }
+                let j = j + 1;
+            }
+            do board.clearRow(currRow - 1);
+
+            let currRow = currRow - 1;
         }
         return;
     }
